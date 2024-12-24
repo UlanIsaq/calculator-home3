@@ -1,6 +1,6 @@
 .container {
 	text-align: center;
-	max-width: 950px;
+	max-width: 550px;
 	margin: 0 auto;
 }
 
@@ -36,6 +36,7 @@
 
 .steps-list {
 	list-style: none;
+
 	margin: 0;
 	margin-bottom: 30px;
 	padding: 0;
@@ -46,6 +47,7 @@
 
 .steps-item {
 	display: flex;
+
 	flex-direction: column;
 	align-items: center;
 	flex: 1 1 0px;

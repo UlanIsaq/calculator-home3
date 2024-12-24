@@ -1,79 +1,134 @@
 import './App.css';
 import styles from './app.module.css';
 import { useState } from 'react';
-import data from './data.json';
 
+let numbers = '';
 export const App = () => {
-	const [steps, setSteps] = useState(() => data);
-	const [activeIndex, setActiveIndex] = useState(0);
+	const [operand1, setOperand1] = useState(null);
+	const [operator, setOperator] = useState(null);
+	const [operand2, setOperand2] = useState(null);
+	const NUMS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-	// И определить 3 обработчика: Клик назад, Клик вперед, Начать сначала
-	//setActiveIndex(0);
+	const [totalAmount, setTotalAmount] = useState(null);
+	let count = 0;
+	const onDigitClick = (event) => {
+		//setTotalAmount(null);
+		console.log('count', count, 'operator', operator);
 
-	const onBackButtonClick = () => {
-		setActiveIndex((activeIndex) => {
-			return activeIndex - 1;
-		});
-	};
-	const onNextButtonClick = () => {
-		setActiveIndex((activeIndex) => {
-			if (activeIndex >= 6) {
-				return 0;
-			}
-			return activeIndex + 1;
-		});
+		numbers += event.target.innerText;
+
+		console.log('numbers', numbers);
+		operator === null ? setOperand1(numbers) : setOperand2(numbers);
+
+		count++;
+		console.log('text:', event.target.innerText, '');
+		console.log('operand1', operand1, 'totalAmount', totalAmount);
+		if (operand1 !== null) {
+			setTotalAmount((prevValue) => null);
+		}
 	};
 
-	const onStepsClickOn = (event) => {
-		setActiveIndex(() => {
-			return event.target.id;
-		});
+	const onOperatorclick = (event) => {
+		numbers = '';
+		setOperator(event.target.innerText);
+		console.log('onOperatorclick', event.target.innerText);
+		if (operand1 !== null) {
+			setTotalAmount((prevValue) => null);
+		}
 	};
+
+	const onEqualClick = () => {
+		switch (operator) {
+			case '+':
+				console.log(
+					'operator:',
+					operator,
+					'total:',
+					Number(totalAmount),
+					'operand1:',
+					Number(operand1),
+					'operand2',
+					Number(operand2),
+				);
+				setTotalAmount(
+					(operator !== null && totalAmount !== null
+						? Number(totalAmount)
+						: Number(operand1)) + Number(operand2),
+				);
+				setOperand1(null);
+				setOperand2(null);
+				setOperator(null);
+				numbers = '';
+				break;
+			case '-':
+				setTotalAmount(
+					(operator !== null && totalAmount !== null
+						? Number(totalAmount)
+						: Number(operand1)) - Number(operand2),
+				);
+				setOperand1(null);
+				setOperand2(null);
+				setOperator(null);
+				numbers = '';
+				break;
+			default:
+				setTotalAmount(0);
+		}
+	};
+
+	const onResetClick = (event) => {
+		setOperator(null);
+		setOperand1(null);
+		setOperand2(null);
+		setTotalAmount(null);
+		numbers = '';
+		console.log('onResetClick', event.target.innerText);
+	};
+
 	return (
 		<div className={styles.container}>
 			<div className={styles.card}>
-				<h1>Инструкция по готовке пельменей</h1>
+				<h1>Calculator</h1>
 				<div className={styles.steps}>
 					<div className={styles['steps-content']}>
 						{/* Для получения активного контента использйте steps и activeIndex */}
-						{steps[Number(activeIndex)].content}
+						{'total' + totalAmount !== null &&
+						operand1 !== null &&
+						operator === null
+							? null
+							: totalAmount}{' '}
+						{operand1}
+						{operand1 !== null || totalAmount !== null ? operator : null}
+						{operand2}
 					</div>
 					<>
 						<ul className={styles['steps-list']}>
-							{
-								/* Выводите <li> с помощью массива steps и метода map(), подставляя в разметку нужные значения и классы */
-								steps.map((item, index) => (
-									<li
-										className={`${styles['steps-item']} ${Number(activeIndex) === index ? styles.active : ''} ${index < Number(activeIndex) ? styles.done : ''}`}
-										id={index}
-									>
-										{/* Для того, чтобы вычислить необходимый класс используйте активный индекс, текущий индекс, а также тернарные операторы */}
-										<button
-											className={styles['steps-item-button']}
-											id={index}
-											onClick={onStepsClickOn}
-										>
-											{item.id.substring(2)}
-										</button>
-										{/* При клике на кнопку установка выбранного шага в качестве активного */}
-										{item.title}
-									</li>
-								))
-							}
+							{NUMS.map((item, index) => (
+								<li
+									className={styles['steps-item']}
+									onClick={onDigitClick}
+									key={index}
+								>
+									<button className={styles['steps-item-button']}>
+										{item}
+									</button>
+								</li>
+							))}
 						</ul>
 					</>
 					<div className={styles['buttons-container']}>
-						<button
-							className={styles.button}
-							onClick={onBackButtonClick}
-							disabled={Number(activeIndex) === 0 ? true : false}
-						>
-							Назад
+						<button className={styles.button} onClick={onEqualClick}>
+							=
 						</button>
-						<button className={styles.button} onClick={onNextButtonClick}>
-							{Number(activeIndex) !== 6 ? 'Далее' : 'Начать сначала'}
-							{/* "Начать сначала", можно сделать этой же кнопкой, просто подменять обработчик и текст в зависимости от условия */}
-							{/* Или заменять всю кнопку в зависимости от условия */}
+
+						<button className={styles.button} onClick={onResetClick}>
+							C
+						</button>
+						<button className={styles.button} onClick={onOperatorclick}>
+							-
+						</button>
+						<button className={styles.button} onClick={onOperatorclick}>
+							+
 						</button>
 					</div>
 				</div>
